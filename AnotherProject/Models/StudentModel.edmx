@@ -4,27 +4,57 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="testApplicationModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Student">
-          <Key>
-            <PropertyRef Name="StudentID" />
-          </Key>
-          <Property Name="StudentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SFirst" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="SLast" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="Age" Type="int" />
-          <Property Name="Doctor" Type="nchar" MaxLength="10" />
-        </EntityType>
-        <EntityContainer Name="testApplicationModelStoreContainer">
-          <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
-        </EntityContainer>
-      </Schema></edmx:StorageModels>
+    <Schema Namespace="testApplicationModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="testApplicationModelStoreContainer">
+    <EntitySet Name="Students" EntityType="testApplicationModel.Store.Students" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Teachers" EntityType="testApplicationModel.Store.Teachers" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="StudentTeacher" Association="testApplicationModel.Store.StudentTeacher">
+      <End Role="Student" EntitySet="Students" />
+      <End Role="Teacher" EntitySet="Teachers" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Students">
+    <Key>
+      <PropertyRef Name="StudentID" />
+    </Key>
+    <Property Name="StudentID" Type="int" Nullable="false" />
+    <Property Name="SFirst" Type="nchar" Nullable="false" MaxLength="10" />
+    <Property Name="SLast" Type="nchar" Nullable="false" MaxLength="10" />
+    <Property Name="Age" Type="int" Nullable="true" />
+    <Property Name="Doctor" Type="nchar" Nullable="true" MaxLength="10" />
+  </EntityType>
+  <EntityType Name="Teachers">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Tname" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Student_StudentID" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="StudentTeacher">
+    <End Role="Student" Type="testApplicationModel.Store.Students" Multiplicity="1" />
+    <End Role="Teacher" Type="testApplicationModel.Store.Teachers" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Student">
+        <PropertyRef Name="StudentID" />
+      </Principal>
+      <Dependent Role="Teacher">
+        <PropertyRef Name="Student_StudentID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="testApplicationModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="testApplicationEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Students" EntityType="testApplicationModel.Student" />
-        </EntityContainer>
+          <EntitySet Name="Teachers" EntityType="testApplicationModel.Teacher" />
+          <AssociationSet Name="StudentTeacher" Association="testApplicationModel.StudentTeacher">
+            <End Role="Student" EntitySet="Students" />
+            <End Role="Teacher" EntitySet="Teachers" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="Student">
           <Key>
             <PropertyRef Name="StudentID" />
@@ -34,27 +64,55 @@
           <Property Name="SLast" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
           <Property Name="Age" Type="Int32" />
           <Property Name="Doctor" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Teachers" Relationship="testApplicationModel.StudentTeacher" FromRole="Student" ToRole="Teacher" />
         </EntityType>
+        <EntityType Name="Teacher">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Student" Relationship="testApplicationModel.StudentTeacher" FromRole="Teacher" ToRole="Student" />
+          <Property Name="Tname" Type="String" Nullable="false" />
+        </EntityType>
+        <Association Name="StudentTeacher">
+          <End Type="testApplicationModel.Student" Role="Student" Multiplicity="1" />
+          <End Type="testApplicationModel.Teacher" Role="Teacher" Multiplicity="*" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="testApplicationModelStoreContainer" CdmEntityContainer="testApplicationEntities">
-          <EntitySetMapping Name="Students">
-            <EntityTypeMapping TypeName="testApplicationModel.Student">
-              <MappingFragment StoreEntitySet="Student">
-                <ScalarProperty Name="Doctor" ColumnName="Doctor" />
-                <ScalarProperty Name="Age" ColumnName="Age" />
-                <ScalarProperty Name="SLast" ColumnName="SLast" />
-                <ScalarProperty Name="SFirst" ColumnName="SFirst" />
-                <ScalarProperty Name="StudentID" ColumnName="StudentID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-        </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="testApplicationModelStoreContainer" CdmEntityContainer="testApplicationEntities">
+    <EntitySetMapping Name="Students">
+      <EntityTypeMapping TypeName="IsTypeOf(testApplicationModel.Student)">
+        <MappingFragment StoreEntitySet="Students">
+          <ScalarProperty Name="StudentID" ColumnName="StudentID" />
+          <ScalarProperty Name="SFirst" ColumnName="SFirst" />
+          <ScalarProperty Name="SLast" ColumnName="SLast" />
+          <ScalarProperty Name="Age" ColumnName="Age" />
+          <ScalarProperty Name="Doctor" ColumnName="Doctor" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Teachers">
+      <EntityTypeMapping TypeName="IsTypeOf(testApplicationModel.Teacher)">
+        <MappingFragment StoreEntitySet="Teachers">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Tname" ColumnName="Tname" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="StudentTeacher" TypeName="testApplicationModel.StudentTeacher" StoreEntitySet="Teachers">
+      <EndProperty Name="Student">
+        <ScalarProperty Name="StudentID" ColumnName="Student_StudentID" />
+      </EndProperty>
+      <EndProperty Name="Teacher">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -68,7 +126,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

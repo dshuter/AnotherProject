@@ -26,5 +26,6 @@ namespace AnotherProject.Models
         }
     
         public DbSet<Student> Students { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
     }
 }

@@ -12,19 +12,11 @@ namespace AnotherProject.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Student
+    public partial class Teacher
     {
-        public Student()
-        {
-            this.Teachers = new HashSet<Teacher>();
-        }
+        public int Id { get; set; }
+        public string Tname { get; set; }
     
-        public int StudentID { get; set; }
-        public string SFirst { get; set; }
-        public string SLast { get; set; }
-        public Nullable<int> Age { get; set; }
-        public string Doctor { get; set; }
-    
-        public virtual ICollection<Teacher> Teachers { get; set; }
+        public virtual Student Student { get; set; }
     }
 }

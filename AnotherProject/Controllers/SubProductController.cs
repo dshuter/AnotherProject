@@ -1,34 +1,33 @@
-﻿using AnotherProject.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
-
-
 using AnotherProject.DAL;
 
 namespace AnotherProject.Controllers
 {
-    public class ProductController : Controller
+    public class SubProductController : Controller
     {
         private ProductContext db = new ProductContext();
         //
-        // GET: /Products/
+        // GET: /SubProduct/
 
-        public ActionResult Index(int? Products)
+        public ActionResult Index(int? SubProducts)
         {
-
-
-            return View(db.Products);
+            return View(db.Subproducts);
         }
 
         //
-        // GET: /Products/Details/5
+        // GET: /SubProduct/Details/5
 
-        public ActionResult Details(int? id)
+        public ActionResult Details(int id)
         {
             return View();
         }
 
         //
-        // GET: /Products/Create
+        // GET: /SubProduct/Create
 
         public ActionResult Create()
         {
@@ -36,16 +35,15 @@ namespace AnotherProject.Controllers
         }
 
         //
-        // POST: /Products/Create
+        // POST: /SubProduct/Create
 
         [HttpPost]
-        public ActionResult Create(Product product)
+        public ActionResult Create(FormCollection collection)
         {
             try
             {
                 // TODO: Add insert logic here
-                db.Products.Add(product);
-                db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
             catch
@@ -55,7 +53,7 @@ namespace AnotherProject.Controllers
         }
 
         //
-        // GET: /Products/Edit/5
+        // GET: /SubProduct/Edit/5
 
         public ActionResult Edit(int id)
         {
@@ -63,7 +61,7 @@ namespace AnotherProject.Controllers
         }
 
         //
-        // POST: /Products/Edit/5
+        // POST: /SubProduct/Edit/5
 
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
@@ -81,7 +79,7 @@ namespace AnotherProject.Controllers
         }
 
         //
-        // GET: /Products/Delete/5
+        // GET: /SubProduct/Delete/5
 
         public ActionResult Delete(int id)
         {
@@ -89,7 +87,7 @@ namespace AnotherProject.Controllers
         }
 
         //
-        // POST: /Products/Delete/5
+        // POST: /SubProduct/Delete/5
 
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
